@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Josip Hanzevacki" />
+    <meta
+      name="description"
+      content="Small Shopping List Project from Traversy Media JS course"
+    />
+    <title>Shopping List Project</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <i class="fa-solid fa-list-check logo fa-2xl"></i>
+      <h1 class="title">Shopping list</h1>
+    </header>
+    <main>
+      <div class="container">
+        <form id="form" class="form">
+          <input type="text" class="form__input" placeholder="Enter Item" />
+          <button type="submit" class="form__button button">+ Add Item</button>
+        </form>
+        <input
+          type="text"
+          name="filter"
+          id="filter"
+          class="filter"
+          placeholder="Filter items"
+        />
+        <ul class="items-list"></ul>
+        <button class="clear-all-button button">Clear All</button>
+      </div>
+    </main>
+  </body>
+</html>

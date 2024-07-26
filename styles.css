@@ -60,6 +60,14 @@ header i {
   align-items: center;
 }
 
+.items-list {
+  padding: 2em 0;
+}
+
+.items-list li {
+  margin-block-end: 1em;
+}
+
 .filter {
   align-self: flex-start;
   border: none;

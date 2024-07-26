@@ -1,51 +1,172 @@
-const form = document.getElementById("form");
-const itemInput = document.querySelector(".form__input");
-const addItemButton = document.querySelector(".form__button");
-const filterInput = document.querySelector(".filter");
+// 1. DOM elements
+const form = document.querySelector(".form");
+const formInput = document.querySelector(".form__input");
 const itemsList = document.querySelector(".items-list");
+const filterInput = document.querySelector(".filter");
 const clearAllButton = document.querySelector(".clear-all-button");
 
-// Utility functions
-function createIcon(classes) {
+// 2. Utilities
+function itemsListEmpty() {
+  const items = itemsList.querySelectorAll("li");
+  return items.length;
+}
+
+function updateUI() {
+  if (itemsListEmpty()) {
+    filterInput.style.display = "block";
+    clearAllButton.style.display = "block";
+  } else {
+    filterInput.style.display = "none";
+    clearAllButton.style.display = "none";
+  }
+}
+
+function updateDOM() {
+  clearItemsList();
+  const items = getItemsFromLocalStorage();
+  items.forEach((item) => addItemToDOM(item));
+  updateUI();
+}
+
+// 2. Local storage functions
+
+// - Helper functions
+// Get items from local storage
+function getItemsFromLocalStorage() {
+  let itemsArray;
+
+  if (localStorage.getItem("items") === null) itemsArray = [];
+  else itemsArray = JSON.parse(localStorage.getItem("items"));
+
+  return itemsArray;
+}
+
+// Update items from local storage
+function updateItemsFromLocalStorage(items) {
+  localStorage.setItem("items", JSON.stringify(items));
+}
+
+// - Main functions
+// Add
+function addItemToLocalStorage(item) {
+  const items = getItemsFromLocalStorage();
+  items.push(item);
+  updateItemsFromLocalStorage(items);
+}
+
+// Remove
+function removeItemFromLocalStorage(item) {
+  let items = getItemsFromLocalStorage();
+  items = items.filter((storageItem) => storageItem !== item);
+  updateItemsFromLocalStorage(items);
+}
+
+// Clear
+function clearItemsFromLocalStorage() {
+  localStorage.removeItem("items");
+}
+
+// 3. DOM functions
+
+// - Helper functions
+// Create icon
+function createIconElement(classString) {
   const icon = document.createElement("i");
-  icon.className = classes;
+  icon.className = classString;
   return icon;
 }
 
-function createButton(classes) {
+// Create button
+function createButtonElement(classString) {
   const button = document.createElement("button");
-  button.className = classes;
-  const icon = createIcon("fa-solid fa-xmark");
-  button.appendChild(icon);
+  button.className = classString;
   return button;
 }
 
-// Event handlers
-function addItem(e) {
-  e.preventDefault();
+// Create list item
+function createListItem(item) {
+  const listItem = document.createElement("li");
+  listItem.appendChild(document.createTextNode(item));
 
-  const newItem = itemInput.value;
+  const icon = createIconElement("fa-solid fa-x");
+  const button = createButtonElement("");
 
-  if (newItem === "") {
-    alert("Please input item.");
-    return;
-  }
+  button.appendChild(icon);
+  listItem.appendChild(button);
 
-  const li = document.createElement("li");
-  li.appendChild(document.createTextNode(newItem));
-  const button = createButton("");
-  li.appendChild(button);
-
-  itemsList.appendChild(li);
+  return listItem;
 }
 
-function removeItem(e) {
-  console.log(e.target);
-  if (e.target.tagName === "I") {
+// - Main functions
+// Add
+function addItemToDOM(item) {
+  const itemElement = createListItem(item);
+  itemsList.appendChild(itemElement);
+}
+
+// Remove
+function removeItemFromDOM(item) {
+  const items = itemsList.querySelectorAll("li");
+  items.forEach((listItem) => {
+    const itemName = listItem.firstChild.textContent;
+    if (itemName === item) listItem.remove();
+  });
+}
+
+// Clear
+function clearItemsList() {
+  items = itemsList.querySelectorAll("li");
+  items.forEach((listItem) => listItem.remove());
+}
+
+// Filter
+function filterItemsList(value) {
+  items = itemsList.querySelectorAll("li");
+  items.forEach((listItem) => {
+    const listItemName = listItem.firstChild.textContent.toLowerCase();
+    if (listItemName.includes(value.toLowerCase()))
+      listItem.style.display = "flex";
+    else listItem.style.display = "none";
+  });
+}
+
+// 4. Event handlers
+function onSubmit(event) {
+  event.preventDefault();
+  item = formInput.value;
+  addItemToLocalStorage(item);
+  addItemToDOM(item);
+  updateUI();
+  formInput.value = "";
+}
+
+function onClickItem(event) {
+  const clickedElement = event.target;
+  const elementTagName = clickedElement.tagName;
+  if (elementTagName === "I") {
+    const item = clickedElement.parentElement.parentElement.textContent;
+    removeItemFromDOM(item);
+    removeItemFromLocalStorage(item);
+    updateUI();
   }
 }
 
-// Event listeners
-form.addEventListener("submit", addItem);
+function onClearAll() {
+  clearItemsFromLocalStorage();
+  clearItemsList();
+  updateUI();
+}
 
-itemsList.addEventListener("click", removeItem);
+function onFilterItems(event) {
+  const filterInput = event.target.value;
+  filterItemsList(filterInput);
+  updateUI();
+}
+
+// 5. Event listeners
+form.addEventListener("submit", onSubmit);
+itemsList.addEventListener("click", onClickItem);
+clearAllButton.addEventListener("click", onClearAll);
+filterInput.addEventListener("input", onFilterItems);
+
+window.onload = updateDOM();

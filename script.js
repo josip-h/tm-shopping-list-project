@@ -1,6 +1,10 @@
+let EDIT_MODE = false;
+let ELEMENT_TO_MODIFY = null;
+
 // 1. DOM elements
 const form = document.querySelector(".form");
 const formInput = document.querySelector(".form__input");
+const formButton = document.querySelector(".form__button");
 const itemsList = document.querySelector(".items-list");
 const filterInput = document.querySelector(".filter");
 const clearAllButton = document.querySelector(".clear-all-button");
@@ -61,6 +65,15 @@ function removeItemFromLocalStorage(item) {
   updateItemsFromLocalStorage(items);
 }
 
+// Update
+function updateItemFromLocalStorage(oldItem, newItem) {
+  let items = getItemsFromLocalStorage();
+  items.forEach((listItem, itemIndex) => {
+    if (listItem === oldItem) items[itemIndex] = newItem;
+  });
+  updateItemsFromLocalStorage(items);
+}
+
 // Clear
 function clearItemsFromLocalStorage() {
   localStorage.removeItem("items");
@@ -113,6 +126,12 @@ function removeItemFromDOM(item) {
   });
 }
 
+// Update
+function updateItemFromDOM(oldItem, newItem) {
+  removeItemFromDOM(oldItem);
+  addItemToDOM(newItem);
+}
+
 // Clear
 function clearItemsList() {
   items = itemsList.querySelectorAll("li");
@@ -133,10 +152,19 @@ function filterItemsList(value) {
 // 4. Event handlers
 function onSubmit(event) {
   event.preventDefault();
-  item = formInput.value;
-  addItemToLocalStorage(item);
-  addItemToDOM(item);
-  updateUI();
+  const item = formInput.value;
+  if (EDIT_MODE) {
+    updateItemFromLocalStorage(ELEMENT_TO_MODIFY, item);
+    updateItemFromDOM(ELEMENT_TO_MODIFY, item);
+    EDIT_MODE = false;
+    ELEMENT_TO_MODIFY = null;
+    formButton.textContent = "+ Add Item";
+    itemsList.addEventListener("click", onClickItem);
+  } else {
+    addItemToLocalStorage(item);
+    addItemToDOM(item);
+    updateUI();
+  }
   formInput.value = "";
 }
 
@@ -148,6 +176,13 @@ function onClickItem(event) {
     removeItemFromDOM(item);
     removeItemFromLocalStorage(item);
     updateUI();
+  } else if (elementTagName === "LI") {
+    EDIT_MODE = true;
+    ELEMENT_TO_MODIFY = clickedElement.textContent;
+    clickedElement.classList.add("item--edit-mode");
+    formInput.value = ELEMENT_TO_MODIFY;
+    formButton.textContent = "Save";
+    itemsList.removeEventListener("click", onClickItem);
   }
 }
 

@@ -129,7 +129,7 @@ function removeItemFromDOM(item) {
 // Update
 function updateItemFromDOM(oldItem, newItem) {
   removeItemFromDOM(oldItem);
-  addItemToDOM(newItem);
+  updateDOM();
 }
 
 // Clear

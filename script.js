@@ -54,8 +54,15 @@ function updateItemsFromLocalStorage(items) {
 // Add
 function addItemToLocalStorage(item) {
   const items = getItemsFromLocalStorage();
-  items.push(item);
-  updateItemsFromLocalStorage(items);
+  const itemsInLowercase = items.map((item) => item.toLowerCase());
+  if (itemsInLowercase.includes(item.toLowerCase())) {
+    alert("Item already on the list!");
+    return false;
+  } else {
+    items.push(item);
+    updateItemsFromLocalStorage(items);
+  }
+  return true;
 }
 
 // Remove
@@ -161,9 +168,10 @@ function onSubmit(event) {
     formButton.textContent = "+ Add Item";
     itemsList.addEventListener("click", onClickItem);
   } else {
-    addItemToLocalStorage(item);
-    addItemToDOM(item);
-    updateUI();
+    if (addItemToLocalStorage(item)) {
+      addItemToDOM(item);
+      updateUI();
+    }
   }
   formInput.value = "";
 }
